@@ -6,6 +6,15 @@
 bind = "127.0.0.1"
 port = 8080
 
+# To reach it from a phone or another machine on the same network, bind to the LAN
+# address or to 0.0.0.0. 127.0.0.1 refuses every connection from another machine,
+# which shows up as "site can't be reached" on the other device.
+#
+#   bind = "0.0.0.0"
+#
+# Anyone who can reach the port can sign in, so only do this on a network you trust.
+# The cookie is not marked Secure because this is plain http on a local network.
+
 [cache]
 # Least recently used files are dropped when the total goes over this, once a minute.
 max_bytes = 8589934592
