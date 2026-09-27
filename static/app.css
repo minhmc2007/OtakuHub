@@ -1319,9 +1319,9 @@ select.oh-input {
   margin-inline: auto;
 }
 
+/* Not sticky: the rail and the content are one page, so they have to travel together.
+   Pinning the rail made it stop while the content beside it kept moving. */
 .oh-side {
-  position: sticky;
-  top: 5.5rem;
   display: flex;
   flex-direction: column;
   gap: var(--gutter);
@@ -1729,10 +1729,6 @@ select.oh-input {
 
   .oh-split-page {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .oh-side {
-    position: static;
   }
 }
 

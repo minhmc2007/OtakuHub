@@ -28,7 +28,6 @@ pub fn router(state: AppState) -> Router {
         .route("/user/rename", post(pages::rename))
         .route("/user/password", post(pages::change_password))
         .route("/user/signout", post(pages::signout))
-        .route("/user/overview", get(pages::user_overview))
         .route("/playlist/new", post(pages::new_playlist))
         .route("/playlist/delete", post(pages::delete_playlist))
         .route("/playlist/add", post(pages::add_to_playlist))

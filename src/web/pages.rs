@@ -251,29 +251,12 @@ pub async fn watch_page(
     .into_response())
 }
 
+/// The library, with one playlist shown.
+///
+/// `/user` and `/playlist/{name}` are the same page, so they are one handler. The bare
+/// route shows the first playlist; a named route shows that one and offers to delete it.
 pub async fn user_page(State(state): State<AppState>, user: CurrentUser) -> AppResult<Response> {
-    let uid = user.id();
-    let entries: Vec<CardView> = render_playlist(&state, uid, None::<&str>).await?;
-    let shown = playlists::all(state.db(), uid)?
-        .first()
-        .map(|p| p.name.clone())
-        .unwrap_or_default();
-    let chrome = Chrome::of(&state, Some(&user.0));
-    Ok(super::html(
-        UserTemplate {
-            jobs: job_rows(&state, &user),
-            recent: history_rows(&state, uid, 8),
-            playlists: library_chips(&state, &user, None),
-            show_delete: false,
-            shown_playlist: shown,
-            signed_in: chrome.signed_in,
-            theme: chrome.theme,
-            entries,
-            user: user.0.clone(),
-        }
-        .render(),
-    )
-    .into_response())
+    library_page(state, user, None).await
 }
 
 pub async fn playlist_page(
@@ -281,18 +264,37 @@ pub async fn playlist_page(
     user: CurrentUser,
     Path(name): Path<String>,
 ) -> AppResult<Response> {
+    library_page(state, user, Some(name)).await
+}
+
+async fn library_page(
+    state: AppState,
+    user: CurrentUser,
+    name: Option<String>,
+) -> AppResult<Response> {
     let uid = user.id();
-    let entries = render_playlist(&state, uid, Some(name.as_str())).await?;
+    // Only a playlist the viewer actually opened can be deleted, so the bare library
+    // route does not offer it.
+    let opened = name.clone();
+    // A bare route shows the first playlist, and `render_playlist` falls back to the same
+    // one, so an account with no playlist renders empty rather than 404.
+    let chosen = match name {
+        Some(n) => Some(n),
+        None => playlists::all(state.db(), uid)?
+            .first()
+            .map(|p| p.name.clone()),
+    };
+    let entries = render_playlist(&state, uid, chosen.as_deref()).await?;
     let chrome = Chrome::of(&state, Some(&user.0));
     Ok(super::html(
         UserTemplate {
             jobs: job_rows(&state, &user),
             recent: history_rows(&state, uid, 8),
-            playlists: library_chips(&state, &user, Some(name.as_str())),
-            show_delete: true,
+            playlists: library_chips(&state, &user, opened.as_deref()),
+            show_delete: opened.is_some(),
             signed_in: chrome.signed_in,
             theme: chrome.theme,
-            shown_playlist: name,
+            shown_playlist: chosen.unwrap_or_default(),
             entries,
             user: user.0.clone(),
         }
@@ -319,11 +321,6 @@ pub async fn settings_page(State(state): State<AppState>, user: CurrentUser) -> 
         .render(),
     )
     .into_response())
-}
-
-pub async fn user_overview(State(state): State<AppState>, user: CurrentUser) -> AppResult<Html<String>> {
-    let rows = render_playlist(&state, user.id(), None).await?;
-    Ok(super::html(PlaylistListTemplate { entries: rows }.render()))
 }
 
 /// A full page for a failed navigation, so an error is never a titleless fragment with no

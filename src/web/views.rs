@@ -676,11 +676,6 @@ pub struct PlayerTemplate {
     pub resume_label: String,
 }
 
-#[derive(Template)]
-#[template(path = "frag/playlist_list.html")]
-pub struct PlaylistListTemplate {
-    pub entries: Vec<CardView>,
-}
 
 #[derive(Template)]
 #[template(path = "frag/job_status.html")]
