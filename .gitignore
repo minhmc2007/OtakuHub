@@ -1,0 +1,26 @@
+# Build artefacts
+/target
+**/*.rs.bk
+
+# Local state. The database, the cache and finished conversions, which can be many
+# gigabytes, and the per install config.
+/data
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+otakuhub.toml
+
+# Test and tool leftovers
+*.profraw
+/coverage
+/playwright-report
+/test-results
+# Page snapshots the browser tool writes into the project directory
+/.playwright-mcp
+
+# Editor noise
+.DS_Store
+*.swp
+*~
+.idea
+.vscode

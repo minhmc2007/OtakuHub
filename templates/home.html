@@ -1,0 +1,88 @@
+{% extends "layout.html" %}
+{% block title %}OtakuHub · Local-First Anime Streaming{% endblock %}
+
+{% block content %}
+{% match user %}
+{% when Some with (u) %}
+<section class="oh-panel oh-panel-raised oh-enter">
+  <div class="oh-split">
+    <div class="oh-enter" style="--i:1">
+      <div style="display:flex; align-items:center; gap:0.75rem;">
+        <span style="display:inline-flex; width:2.5rem; height:2.5rem; border-radius:var(--radius-pill); background:var(--accent-light); color:var(--accent); align-items:center; justify-content:center; box-shadow:var(--shadow-inset-pill);">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </span>
+        <div>
+          <h1 class="oh-h2" style="margin-bottom:0.15rem;">Welcome back, {{ u.username }}</h1>
+          <p class="oh-muted" style="font-size:0.85rem;">Your local streaming library is ready</p>
+        </div>
+      </div>
+    </div>
+    <div class="oh-chips oh-enter" style="--i:2">
+      {% for p in playlists %}
+        <a class="oh-chip" href="/playlist/{{ p.name | urlencode }}">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <span>{{ p.name }}</span>
+          <span class="oh-count">{{ p.count }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% when None %}
+<section class="oh-hero">
+  <div class="oh-panel oh-panel-raised oh-enter" style="--i:1">
+    <span class="oh-brand-badge" style="margin-bottom:1rem; padding:0.3rem 0.85rem; font-size:0.75rem;">LOCAL FIRST · ZERO TELEMETRY</span>
+    <h1 class="oh-h1" style="margin-bottom:0.75rem;">OtakuHub</h1>
+    <p class="oh-lead">
+      Private, lightning-fast self-hosted anime streaming with hardware-accelerated on-the-fly transcoding and offline library management.
+    </p>
+    <div class="oh-row" style="--i:2">
+      <a class="oh-btn oh-btn-primary" href="/signup">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="8.5" cy="7" r="4"></circle>
+          <line x1="20" y1="8" x2="20" y2="14"></line>
+          <line x1="23" y1="11" x2="17" y2="11"></line>
+        </svg>
+        <span>Get Started</span>
+      </a>
+      <a class="oh-btn" href="/login">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+          <polyline points="10 17 15 12 10 7"></polyline>
+          <line x1="15" y1="12" x2="3" y2="12"></line>
+        </svg>
+        <span>Sign in</span>
+      </a>
+    </div>
+  </div>
+</section>
+{% endmatch %}
+
+{% match results %}
+{% when Some with (r) %}
+<section class="oh-section">{{ r.html | safe }}</section>
+{% when None %}{% endmatch %}
+
+{% if !recent.is_empty() %}
+<section class="oh-section oh-enter" style="--i:3; margin-top:1.5rem;">
+  <div class="oh-split" style="margin-bottom:1rem;">
+    <h2 class="oh-h3">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:var(--accent);">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 16 14"></polyline>
+      </svg>
+      <span>Continue watching</span>
+    </h2>
+  </div>
+  <div class="oh-grid">
+    {% for r in recent %}{{ r.html | safe }}{% endfor %}
+  </div>
+</section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,31 @@
+# OtakuHub configuration. Every key has a default, so this file only needs the lines you
+# want to change. A flag or an OTAKUHUB_* variable beats this file, whichever is set.
+
+[server]
+# The address to listen on. 127.0.0.1 keeps the server to this machine.
+bind = "127.0.0.1"
+port = 8080
+
+[cache]
+# Least recently used files are dropped when the total goes over this, once a minute.
+max_bytes = 8589934592
+
+# How long a cached segment is kept before it is re-fetched.
+segment_ttl_secs = 604800
+
+[transcode]
+# Set to false to always use libx264 or libx265. Hardware is proven at startup.
+hardware = true
+
+# A wall clock ceiling on one conversion, against a source that never ends.
+timeout_secs = 14400
+
+# Cut a conversion off after this many seconds of source. Zero means no limit.
+max_seconds = 0
+
+[source]
+# The upstream provider. These are the defaults ani-cli uses.
+base = "https://hianime.at"
+
+# Embed servers to try, in order. The first that decodes wins.
+embed_servers = "ZokoAnime"

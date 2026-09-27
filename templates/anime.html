@@ -1,0 +1,97 @@
+{% extends "layout.html" %}
+{% block title %}{{ anime.title }} · OtakuHub{% endblock %}
+
+{% block content %}
+<section class="oh-panel oh-panel-raised oh-detail oh-enter">
+  <div class="oh-detail-art">
+    <div class="oh-poster oh-poster-inset">
+      {% match poster %}
+        {% when Some with (p) %}
+          <img src="{{ p }}" alt="{{ anime.title }}" width="260" height="360" loading="eager">
+        {% when None %}
+          <span class="oh-poster-fallback">{{ anime.title.chars().take(2).collect::<String>() }}</span>
+      {% endmatch %}
+    </div>
+  </div>
+
+  <div class="oh-detail-body">
+    <span class="oh-brand-badge" style="margin-bottom:0.75rem; display:inline-block;">SERIES</span>
+    <h1 class="oh-h2">{{ anime.title }}</h1>
+
+    {% if can_save %}
+    <div class="oh-row oh-row-tight" style="align-items:center;">
+      <span class="oh-muted" style="display:inline-flex; align-items:center; gap:0.4rem; font-weight:600;">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+        </svg>
+        Save to:
+      </span>
+      {% for p in save_buttons %}
+        <button class="oh-btn oh-btn-small {% if p.in_playlist %}oh-btn-active{% endif %}"
+                type="button"
+                hx-post="/api/playlist/{{ p.action }}"
+                hx-vals='{{ p.vals }}'
+                hx-target="#oh-save-alert" hx-swap="innerHTML">
+          <span>{{ p.label }}</span>
+        </button>
+      {% endfor %}
+    </div>
+    <div id="oh-save-alert" aria-live="polite"></div>
+    {% endif %}
+
+    <div style="margin-top:1.5rem; margin-bottom:0.75rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
+      <h2 class="oh-h3" style="margin-bottom:0;">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:var(--accent);">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+        <span>Episodes</span>
+      </h2>
+      <span class="oh-count" id="oh-epcount">{% if watched_count > 0 %}{{ watched_count }} watched{% endif %}</span>
+    </div>
+
+    {% if episodes.is_empty() %}
+      <p class="oh-muted">No episodes are listed for this title yet.</p>
+    {% else %}
+      <div class="oh-epfind">
+        <label class="oh-visually-hidden" for="oh-epq">Find an episode</label>
+        <div style="position:relative; display:flex; align-items:center;">
+          <input class="oh-input oh-epfind-input" id="oh-epq" type="search" inputmode="search"
+                 placeholder="Filter by episode number or title..." autocomplete="off" spellcheck="false"
+                 aria-describedby="oh-epcount">
+        </div>
+        <p class="oh-epfind-hint" id="oh-epjump-hint">
+          <span>💡 Quick jump: Press</span>
+          <kbd>G</kbd>
+          <span>then type a number to jump immediately</span>
+        </p>
+      </div>
+
+      <ol class="oh-episodes" id="oh-episodes">
+        {% for e in episodes %}
+          <li>
+            <a class="oh-episode{% if e.watched %} oh-episode-watched{% endif %}"
+               href="/watch/{{ anime.id }}/{{ e.id }}?ep={{ e.number }}"
+               data-num="{{ e.number }}" data-name="{{ e.title }}"
+               {% if e.watched %}data-watched="1"{% endif %}
+               {% if e.percent > 0 %}data-percent="{{ e.percent }}"{% endif %}>
+              <span class="oh-episode-num">
+                {% if e.watched %}
+                  <svg class="oh-tick" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5l5.2 5L20 6.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                {% else %}
+                  {{ e.number }}
+                {% endif %}
+              </span>
+              <span class="oh-episode-name">{{ e.title }}</span>
+              {% if e.percent > 0 %}
+                <span class="oh-episode-bar" aria-hidden="true"><span style="width:{{ e.percent }}%"></span></span>
+              {% endif %}
+              {% if e.watched %}<span class="oh-visually-hidden">watched</span>{% endif %}
+            </a>
+          </li>
+        {% endfor %}
+      </ol>
+      <p class="oh-muted" id="oh-epempty" hidden style="padding:1rem; text-align:center;">No episode matches that search query.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

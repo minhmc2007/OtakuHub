@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+{% block title %}Sign in · OtakuHub{% endblock %}
+
+{% block content %}
+<section class="oh-narrow oh-enter" style="padding-top:1.5rem;">
+  <div class="oh-panel oh-panel-raised">
+    <div style="text-align:center; margin-bottom:1.5rem;">
+      <span class="oh-brand-mark" style="margin:0 auto 0.85rem;" aria-hidden="true"></span>
+      <h1 class="oh-h2">Welcome to OtakuHub</h1>
+      <p class="oh-muted">Sign in to access your local library, watch history, and playlists.</p>
+    </div>
+
+    <form class="oh-form" method="post" action="/login">
+      <label class="oh-field">
+        <span>Username</span>
+        <input class="oh-input" type="text" name="username" required minlength="1" maxlength="64"
+               autocomplete="username" autocapitalize="none" spellcheck="false" autofocus placeholder="Enter your username">
+      </label>
+      <label class="oh-field">
+        <span>Password</span>
+        <input class="oh-input" type="password" name="password" required
+               autocomplete="current-password" placeholder="Enter your password">
+      </label>
+      <button class="oh-btn oh-btn-primary" type="submit" style="width:100%; margin-top:0.5rem;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+          <polyline points="10 17 15 12 10 7"></polyline>
+          <line x1="15" y1="12" x2="3" y2="12"></line>
+        </svg>
+        <span>Sign in</span>
+      </button>
+    </form>
+
+    <div style="margin-top:1.5rem; text-align:center; padding-top:1.25rem; border-top:1px solid rgba(162, 178, 202, 0.2);">
+      <p class="oh-muted">
+        No account yet?
+        <a href="/signup" style="color:var(--accent); font-weight:700; text-decoration:none;">Create account</a>
+      </p>
+    </div>
+  </div>
+</section>
+{% endblock %}

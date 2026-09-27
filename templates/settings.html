@@ -1,0 +1,130 @@
+{% extends "layout.html" %}
+{% block title %}Settings · OtakuHub{% endblock %}
+
+{% block content %}
+<section class="oh-narrow oh-enter">
+  <form class="oh-panel oh-panel-raised oh-form" method="post" action="/api/settings/save">
+    <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.5rem;">
+      <span style="display:inline-flex; width:2.25rem; height:2.25rem; border-radius:var(--radius-pill); background:var(--accent-light); color:var(--accent); align-items:center; justify-content:center; box-shadow:var(--shadow-inset-pill);">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </span>
+      <div>
+        <h1 class="oh-h2" style="margin-bottom:0;">Settings</h1>
+        <p class="oh-muted" style="font-size:0.85rem;">Preferences for {{ user.username }}</p>
+      </div>
+    </div>
+
+    <fieldset class="oh-fieldset">
+      <legend>Playback & Encoding</legend>
+
+      <label class="oh-field">
+        <span>Video Codec</span>
+        <select class="oh-input" name="codec">
+          <option value="h264" {% if settings.codec.as_str() == "h264" %}selected{% endif %}>H.264 / AVC (Broadest Compatibility)</option>
+          <option value="h265" {% if settings.codec.as_str() == "h265" %}selected{% endif %}>H.265 / HEVC (High Efficiency)</option>
+        </select>
+        <span class="oh-help">Used when real-time conversion is required. Direct stream playback preserves original source codec.</span>
+      </label>
+
+      <label class="oh-field">
+        <span>Preferred Resolution</span>
+        <select class="oh-input" name="max_height">
+          {% for h in heights %}
+            <option value="{{ h }}" {% if settings.max_height == *h %}selected{% endif %}>{{ h }}p</option>
+          {% endfor %}
+        </select>
+        <span class="oh-help">FFmpeg triggers hardware transcoding if the stream lacks this resolution.</span>
+      </label>
+
+      <label class="oh-check">
+        <input type="checkbox" name="hardware" value="1" {% if settings.hardware %}checked{% endif %}>
+        <span>Enable Hardware GPU Acceleration</span>
+        <span class="oh-help">Disabling forces CPU libx264/libx265 encoding, which uses substantially more system resources.</span>
+      </label>
+
+      <label class="oh-check">
+        <input type="checkbox" name="autoplay" value="1" {% if settings.autoplay %}checked{% endif %}>
+        <span>Autoplay episodes immediately</span>
+      </label>
+
+      <label class="oh-check">
+        <input type="checkbox" name="dub" value="1" {% if settings.dub %}checked{% endif %}>
+        <span>Prefer English Dub audio when available</span>
+      </label>
+    </fieldset>
+
+    <fieldset class="oh-fieldset">
+      <legend>Appearance & Theme</legend>
+      <label class="oh-field">
+        <span>Interface Theme</span>
+        <select class="oh-input" name="theme">
+          {% for t in themes %}
+            <option value="{{ t }}" {% if settings.theme == *t %}selected{% endif %}>{{ t }}</option>
+          {% endfor %}
+        </select>
+      </label>
+    </fieldset>
+
+    <button class="oh-btn oh-btn-primary" type="submit" style="width:100%; margin-top:0.5rem;">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+      <span>Save Settings</span>
+    </button>
+  </form>
+
+  <div class="oh-panel oh-panel-raised" style="margin-top:1.5rem;">
+    <div style="display:flex; align-items:center; gap:0.65rem; margin-bottom:1.15rem;">
+      <span style="display:inline-flex; width:2rem; height:2rem; border-radius:var(--radius-pill); background:var(--accent-light); color:var(--accent); align-items:center; justify-content:center; box-shadow:var(--shadow-inset-pill);">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+          <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+          <line x1="6" y1="6" x2="6.01" y2="6"></line>
+          <line x1="6" y1="18" x2="6.01" y2="18"></line>
+        </svg>
+      </span>
+      <h2 class="oh-h3" style="margin-bottom:0;">Host Telemetry</h2>
+    </div>
+
+    <dl class="oh-stats">
+      <dt>Encoder</dt>
+      <dd>
+        {{ banner.hardware }}
+        {% if !banner.hardware_is_gpu %}
+          <span class="oh-badge oh-badge-warn">software fallback</span>
+        {% endif %}
+      </dd>
+
+      <dt>Device</dt>
+      <dd>{{ banner.device }}</dd>
+
+      <dt>GPU Engine</dt>
+      <dd data-metric="gpu">measuring...</dd>
+
+      <dt>CPU Cores</dt>
+      <dd data-metric="cpu_cores">measuring...</dd>
+
+      <dt>CPU Utilization</dt>
+      <dd data-metric="cpu_percent">measuring...</dd>
+
+      <dt>RAM Consumption</dt>
+      <dd data-metric="mem">measuring...</dd>
+
+      <dt>Local Disk Cache</dt>
+      <dd>{{ cache_human }}</dd>
+
+      <dt>Served from Cache</dt>
+      <dd data-metric="served">{{ served_human }}</dd>
+
+      <dt>Upstream Network Fetches</dt>
+      <dd data-metric="upstream">{{ upstream_fetches }}</dd>
+
+      <dt>Active Conversions</dt>
+      <dd data-metric="running_jobs">{{ banner.running_jobs }}</dd>
+    </dl>
+  </div>
+</section>
+{% endblock %}

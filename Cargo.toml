@@ -1,0 +1,62 @@
+[package]
+name = "otakuhub"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.85"
+description = "Local first anime provider: a self hosted web front end over hianime with caching and hardware accelerated transcoding"
+license = "GPL-3.0-only"
+default-run = "otakuhub"
+
+[dependencies]
+axum = { version = "0.8", features = ["macros", "http2"] }
+tokio = { version = "1", features = [
+    "rt-multi-thread",
+    "macros",
+    "fs",
+    "io-util",
+    "net",
+    "signal",
+    "sync",
+    "time",
+] }
+tower = "0.5"
+tower-http = { version = "0.7", features = [
+    "fs",
+    "compression-gzip",
+    "compression-br",
+    "trace",
+    "set-header",
+    "limit",
+] }
+askama = "0.16"
+reqwest = { version = "0.13", default-features = false, features = [
+    "native-tls",
+    "charset",
+    "http2",
+    "gzip",
+    "brotli",
+] }
+scraper = "0.27"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+rusqlite = { version = "0.40", features = ["bundled"] }
+ffmpeg = { package = "ffmpeg-next", version = "9.0" }
+sysinfo = "0.39"
+sha2 = "0.10"
+getrandom = "0.3"
+base64 = "0.22"
+percent-encoding = "2"
+thiserror = "2"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+argon2 = "0.5"
+password-hash = "0.5"
+
+[dev-dependencies]
+tempfile = "3"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 4
+strip = true

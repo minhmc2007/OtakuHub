@@ -1,0 +1,138 @@
+<section class="oh-player oh-panel oh-panel-raised oh-enter">
+  <div class="oh-player-head">
+    <a class="oh-btn oh-btn-icon" href="/anime/{{ anime.id }}" aria-label="Back to the episode list" title="Back to episode list">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M19 12H5"></path>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+    </a>
+    <div class="oh-player-title">
+      <h1 class="oh-h2">{{ anime.title }}</h1>
+      <p class="oh-muted" style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+        <span class="oh-brand-badge">EPISODE {{ episode.number }}</span>
+        {% match episode.title %}
+          {% when Some with (t) %}<span>·</span><span>{{ t }}</span>
+          {% when None %}
+        {% endmatch %}
+        <span>·</span>
+        <span class="oh-count">{{ mode_label }}</span>
+      </p>
+    </div>
+    <div class="oh-player-actions">
+      <a class="oh-btn oh-btn-small" href="{{ mode_toggle }}">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="16 3 21 3 21 8"></polyline>
+          <line x1="4" y1="20" x2="21" y2="3"></line>
+          <polyline points="21 16 21 21 16 21"></polyline>
+          <line x1="15" y1="15" x2="21" y2="21"></line>
+          <line x1="4" y1="4" x2="9" y2="9"></line>
+        </svg>
+        <span>{{ mode_toggle_label }}</span>
+      </a>
+    </div>
+  </div>
+
+  {% if let Some(secs) = resume_secs %}
+    <div class="oh-resume" id="oh-resume" role="dialog" aria-labelledby="oh-resume-text">
+      <p class="oh-resume-text" id="oh-resume-text">
+        You stopped at <strong>{{ resume_label }}</strong> of episode {{ episode.number }}.
+      </p>
+      <div class="oh-resume-actions">
+        <button class="oh-btn oh-btn-primary" type="button" id="oh-resume-go">
+          Continue from {{ resume_label }}
+        </button>
+        <a class="oh-btn" id="oh-resume-restart"
+           href="/watch/{{ anime.id }}/{{ episode.id }}?ep={{ episode.number }}&restart=1">
+          Start over
+        </a>
+        <button class="oh-btn oh-btn-quiet" type="button" id="oh-resume-dismiss" aria-label="Dismiss">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="oh-video-well">
+    <video id="oh-video" class="oh-video" controls playsinline preload="metadata"
+           data-playlist="{{ play.playlist_url }}"
+           data-anime="{{ play.anime_id }}"
+           data-ep-id="{{ episode.id }}"
+           data-ep-num="{{ episode.number }}"
+           {% if let Some(s) = resume_secs %}data-resume="{{ s }}"{% endif %}
+           {% if play.live %}data-live="1"{% endif %}></video>
+  </div>
+
+  {% if play.notice.is_some() %}
+    <p class="oh-notice" role="status">
+      <svg style="vertical-align:-2px; margin-right:4px;" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      {{ play.notice.as_ref().unwrap() }}
+    </p>
+  {% endif %}
+
+  <div style="margin-top:1.25rem; display:flex; flex-direction:column; gap:0.85rem;">
+    {% if has_save %}
+    <div class="oh-row oh-row-tight" style="margin:0; align-items:center;">
+      <span class="oh-muted" style="display:inline-flex; align-items:center; gap:0.35rem; font-weight:600; min-width:5.5rem;">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+        </svg>
+        Save to:
+      </span>
+      {% for p in save_buttons %}
+        <button class="oh-btn oh-btn-small {% if p.in_playlist %}oh-btn-active{% endif %}" type="button"
+                hx-post="/api/playlist/{{ p.action }}"
+                hx-vals='{{ p.vals }}'
+                hx-target="#oh-save-alert-2" hx-swap="innerHTML">
+          <span>{{ p.label }}</span>
+        </button>
+      {% endfor %}
+      <div id="oh-save-alert-2" aria-live="polite"></div>
+    </div>
+    {% endif %}
+
+    {% if !play.subs.is_empty() %}
+    <div class="oh-row oh-row-tight" style="margin:0; align-items:center;">
+      <span class="oh-muted" style="display:inline-flex; align-items:center; gap:0.35rem; font-weight:600; min-width:5.5rem;">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+          <path d="M7 15h4M15 15h2M7 11h2M13 11h4"></path>
+        </svg>
+        Subtitles:
+      </span>
+      {% for s in play.subs %}
+        <button class="oh-btn oh-btn-small" type="button" data-sub="{{ s.url }}">{{ s.label }}</button>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="oh-row oh-row-tight" style="margin:0; align-items:center;">
+      <span class="oh-muted" style="display:inline-flex; align-items:center; gap:0.35rem; font-weight:600; min-width:5.5rem;">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        Quality:
+      </span>
+      {% for q in play.qualities %}
+        {% if q.direct %}
+          <a class="oh-btn oh-btn-small {% if q.selected %}oh-btn-active{% endif %}"
+             href="{{ q.href }}">
+            {{ q.label }}
+          </a>
+        {% else %}
+          <button class="oh-btn oh-btn-small {% if q.selected %}oh-btn-active{% endif %}" type="button"
+                  hx-post="/api/transcode"
+                  hx-vals='{{ q.vals }}'
+                  hx-target="#oh-job" hx-swap="innerHTML">
+            {{ q.label }}
+          </button>
+        {% endif %}
+      {% endfor %}
+      <span id="oh-job" aria-live="polite"></span>
+    </div>
+  </div>
+</section>

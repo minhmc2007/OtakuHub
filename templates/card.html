@@ -1,0 +1,20 @@
+<article class="oh-card">
+  <a class="oh-card-link" href="/anime/{{ id }}" title="{{ title }}">
+    <div class="oh-poster oh-poster-inset">
+      {% match poster %}
+        {% when Some with (p) %}
+          <img src="{{ p }}" alt="" loading="lazy" decoding="async" width="220" height="300">
+        {% when None %}
+          <span class="oh-poster-fallback" aria-hidden="true">{{ initials }}</span>
+      {% endmatch %}
+      <div class="oh-poster-overlay" aria-hidden="true">
+        <div class="oh-play-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <h3 class="oh-card-title">{{ title }}</h3>
+  </a>
+</article>

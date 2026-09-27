@@ -1,0 +1,11 @@
+<ol class="oh-episodes">
+  {% for e in episodes %}
+    <li>
+      <a class="oh-episode" href="/watch/{{ anime_id }}/{{ e.id }}?ep={{ e.number }}"
+         data-num="{{ e.number }}" data-name="{{ e.title }}">
+        <span class="oh-episode-num">{{ e.number }}</span>
+        <span class="oh-episode-name">{{ e.title }}</span>
+      </a>
+    </li>
+  {% endfor %}
+</ol>

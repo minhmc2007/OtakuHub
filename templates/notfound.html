@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block title %}404 Page Not Found · OtakuHub{% endblock %}
+
+{% block content %}
+<section class="oh-narrow oh-enter" style="padding-top:2rem;">
+  <div class="oh-panel oh-panel-raised" style="text-align:center;">
+    <div style="font-family:'JetBrains Mono', monospace; font-size:3.5rem; font-weight:800; color:var(--accent); line-height:1; margin-bottom:1rem; text-shadow:0 0 20px var(--accent-glow);">
+      404
+    </div>
+    <h1 class="oh-h2">Page Not Found</h1>
+    <p class="oh-muted" style="margin-bottom:1.5rem;">The requested title, page, or playlist does not exist or has been removed.</p>
+    <a class="oh-btn oh-btn-primary" href="/">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+      </svg>
+      <span>Back to Home</span>
+    </a>
+  </div>
+</section>
+{% endblock %}

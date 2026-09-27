@@ -1,0 +1,8 @@
+{% extends "layout.html" %}
+{% block title %}{{ anime.title }} episode {{ episode.number }} - OtakuHub{% endblock %}
+
+{% block content %}
+<section class="oh-player-wrap">
+  {% include "frag/player.html" %}
+</section>
+{% endblock %}

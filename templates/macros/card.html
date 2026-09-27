@@ -1,0 +1,24 @@
+{% macro card(id, title, poster, badge) %}
+<article class="oh-card">
+  <a class="oh-card-link" href="/anime/{{ id }}" title="{{ title }}">
+    <div class="oh-poster oh-poster-inset">
+      {% if poster.is_some() %}
+        <img src="{{ poster.as_ref().unwrap() }}" alt="" loading="lazy" decoding="async" width="220" height="300">
+      {% else %}
+        <span class="oh-poster-fallback" aria-hidden="true">{{ title.chars().take(2).collect::<String>() }}</span>
+      {% endif %}
+      {% if badge.is_some() %}
+        <span class="oh-badge">{{ badge.as_ref().unwrap() }}</span>
+      {% endif %}
+      <div class="oh-poster-overlay" aria-hidden="true">
+        <div class="oh-play-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <h3 class="oh-card-title">{{ title }}</h3>
+  </a>
+</article>
+{% endmacro %}
